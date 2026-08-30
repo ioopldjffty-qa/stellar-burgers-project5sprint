@@ -56,3 +56,43 @@ class TestBurger:
         assert receipt[1] == '= sauce hot sauce ='
         assert receipt[2] == '(==== black bun ====)'
         assert receipt[3] == 'Price: 300.0'
+
+    def test_get_receipt_without_ingredients(self):
+        burger = Burger()
+        bun = Bun('white bun', 100)
+        burger.set_buns(bun)
+        receipt = burger.get_receipt()
+        assert len(receipt) == 3  # две строки с булочкой и цена
+        assert any("white bun" in line.lower() for line in receipt)
+
+    def test_get_receipt_english(self):
+        burger = Burger()
+        bun = Bun('white bun', 100)
+        burger.set_buns(bun)
+        burger.add_ingredient(Ingredient(IngredientType.SAUCE, 'hot sauce', 50))
+        receipt = burger.get_receipt()
+        assert any("bun" in line.lower() for line in receipt)
+
+    def test_add_duplicate_ingredient(self):
+        burger = Burger()
+        bun = Bun('white bun', 100)
+        burger.set_buns(bun)
+        ingredient = Ingredient(IngredientType.SAUCE, 'hot sauce', 50)
+        burger.add_ingredient(ingredient)
+        burger.add_ingredient(ingredient)
+        assert len(burger.ingredients) == 2
+
+    def test_get_receipt_upper_case(self):
+        burger = Burger()
+        bun = Bun('WHITE BUN', 100)
+        burger.set_buns(bun)
+        receipt = burger.get_receipt()
+        assert any("WHITE BUN" in line for line in receipt)
+
+    def test_get_price_with_ingredients(self):
+        burger = Burger()
+        bun = Bun('white bun', 100)
+        burger.set_buns(bun)
+        burger.add_ingredient(Ingredient(IngredientType.SAUCE, 'hot sauce', 50))
+        burger.add_ingredient(Ingredient(IngredientType.FILLING, 'cutlet', 150))
+        assert burger.get_price() == 400
